@@ -41,11 +41,16 @@ const LogIn = () => {
       });
 
       const data = await res.json();
-      setSubmitted(data);
-
-      setEmail("");
-      setPassword("");
-      setError(false);
+      if (data === true) {
+        setSubmitted(data);
+        setEmail("");
+        setPassword("");
+        setError(false);
+      } else {
+        setError(true);
+        setEmail("");
+        setPassword("");
+      }
     } catch (err) {
       console.error("Error submitting form:", err);
     }

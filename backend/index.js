@@ -17,6 +17,17 @@ app.use(
   })
 );
 
+const validateEmail = (email) => {
+  var re = /\S+@\S+\.\S+/;
+  return re.test(email);
+};
+
+const validatePassword = (password) => {
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\|]).{8,}$/;
+  return passwordRegex.test(password);
+};
+
 app.get("/", (req, res) => {
   res.send("hello Ram!");
 });
@@ -52,6 +63,20 @@ app.post("/signup", upload.none(), (req, res) => {
     return res.status(400).json({ message: "All fields are required." });
   }
 
+  if (!name || name.length < 1) {
+    return res
+      .status(400)
+      .send("Name is required and should be at least 3 characters long.");
+  }
+
+  if (validateEmail(email) !== true) {
+    return res.status(400).send("Invalid email address.");
+  }
+
+  if (validatePassword(password) !== true) {
+    return res.status(400).send("Password length is greater than 8.");
+  }
+
   const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
   const params = [name, email, password];
 
@@ -60,7 +85,7 @@ app.post("/signup", upload.none(), (req, res) => {
       console.error("Error inserting user:", err.message);
       return res.status(500).json({ message: "Failed to create user." });
     }
-    res.status(201).json(true);
+    res.status(201).json({ message: "User successfully registered!!" });
   });
 });
 
