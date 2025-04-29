@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 const db = require("./db");
 const app = express();
 const port = 8000;
@@ -39,54 +40,67 @@ app.post("/login", upload.none(), (req, res) => {
     return res.status(400).json({ message: "All fields are required." });
   }
 
-  const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
-  const params = [email, password];
+  const sql = "SELECT * FROM users WHERE email = ?";
+  const params = [email];
 
-  db.get(sql, params, (err, user) => {
+  db.get(sql, params, async (err, user) => {
     if (err) {
       console.error("Error querying user:", err.message);
       return res.status(500).json({ message: "Internal server error." });
     }
 
-    if (user) {
-      return res.status(200).json(true);
-    } else {
-      return res.status(401).json(false);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password." });
+    }
+
+    try {
+      const match = await bcrypt.compare(password, user.password);
+
+      if (match) {
+        return res.status(200).json({ message: "Login successful!" });
+      } else {
+        return res.status(401).json({ message: "Invalid email or password." });
+      }
+    } catch (error) {
+      console.error("Error comparing passwords:", error.message);
+      return res.status(500).json({ message: "Internal server error." });
     }
   });
 });
 
-app.post("/signup", upload.none(), (req, res) => {
+app.post("/signup", upload.none(), async (req, res) => {
   const { name, email, password } = req.body;
+  const saltRounds = 10;
 
   if (!name || !email || !password) {
     return res.status(400).json({ message: "All fields are required." });
   }
 
-  if (!name || name.length < 1) {
-    return res
-      .status(400)
-      .send("Name is required and should be at least 3 characters long.");
-  }
-
-  if (validateEmail(email) !== true) {
+  if (!validateEmail(email)) {
     return res.status(400).send("Invalid email address.");
   }
 
-  if (validatePassword(password) !== true) {
-    return res.status(400).send("Password length is greater than 8.");
+  if (!validatePassword(password)) {
+    return res.status(400).send("Password must be at least 8 characters long.");
   }
 
-  const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-  const params = [name, email, password];
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  db.run(sql, params, function (err) {
-    if (err) {
-      console.error("Error inserting user:", err.message);
-      return res.status(500).json({ message: "Failed to create user." });
-    }
-    res.status(201).json({ message: "User successfully registered!!" });
-  });
+    const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+    const params = [name, email, hashedPassword];
+
+    db.run(sql, params, function (err) {
+      if (err) {
+        console.error("Error inserting user:", err.message);
+        return res.status(500).json({ message: "Failed to create user." });
+      }
+      res.status(201).json({ message: "User successfully registered!!" });
+    });
+  } catch (error) {
+    console.error("Hashing error:", error.message);
+    res.status(500).json({ message: "Internal server error." });
+  }
 });
 
 app.listen(port, () => {
