@@ -9,6 +9,7 @@ const LogIn = () => {
   const [password, setPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
+  const [apiMessage, setApiMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -29,6 +30,8 @@ const LogIn = () => {
     e.preventDefault();
     if (email === "" || password === "") {
       setError(true);
+      setApiMessage("Please enter all fields.");
+      return;
     }
     try {
       const formData = new FormData();
@@ -41,18 +44,21 @@ const LogIn = () => {
       });
 
       const data = await res.json();
-      if (data === true) {
-        setSubmitted(data);
-        setEmail("");
-        setPassword("");
+      if (res.ok) {
+        setSubmitted(true);
         setError(false);
-      } else {
-        setError(true);
+        setApiMessage(data.message || "User logged in successfully!");
         setEmail("");
         setPassword("");
+      } else {
+        setSubmitted(false);
+        setError(true);
+        setApiMessage(data.message || "Login failed.");
       }
     } catch (err) {
       console.error("Error submitting form:", err);
+      setError(true);
+      setApiMessage("Something went wrong. Try again.");
     }
   };
 
@@ -64,7 +70,7 @@ const LogIn = () => {
           display: error ? "" : "none",
         }}
       >
-        <h1>Please enter all the fields</h1>
+        <h2>{apiMessage}</h2>
       </div>
     );
   };
@@ -77,7 +83,7 @@ const LogIn = () => {
           display: submitted ? "" : "none",
         }}
       >
-        <h1>User logged in successfully!</h1>
+        <h2>{apiMessage}</h2>
       </div>
     );
   };

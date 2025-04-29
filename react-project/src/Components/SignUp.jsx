@@ -10,6 +10,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
+  const [apiMessage, setApiMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -36,6 +37,7 @@ const SignUp = () => {
 
     if (name === "" || email === "" || password === "") {
       setError(true);
+      setApiMessage("Please enter all fields.");
       return;
     }
 
@@ -51,12 +53,18 @@ const SignUp = () => {
       });
 
       const data = await res.json();
-      setSubmitted(data);
-
-      setName("");
-      setEmail("");
-      setPassword("");
-      setError(false);
+      if (res.ok) {
+        setSubmitted(true);
+        setApiMessage(data.message || "User successfully registered!");
+        setName("");
+        setEmail("");
+        setPassword("");
+        setError(false);
+      } else {
+        setSubmitted(false);
+        setError(true);
+        setApiMessage(data.message || "Signup failed.");
+      }
     } catch (err) {
       console.error("Error submitting form:", err);
     }
@@ -70,7 +78,7 @@ const SignUp = () => {
           display: error ? "" : "none",
         }}
       >
-        <h1>Please enter all the fields</h1>
+        <h2>{apiMessage}</h2>
       </div>
     );
   };
@@ -83,7 +91,7 @@ const SignUp = () => {
           display: submitted ? "" : "none",
         }}
       >
-        <h1>User successfully registered!!</h1>
+        <h2>{apiMessage}</h2>
       </div>
     );
   };
