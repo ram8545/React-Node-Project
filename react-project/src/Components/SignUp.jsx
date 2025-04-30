@@ -78,7 +78,7 @@ const SignUp = () => {
       formData.append("email", email);
       formData.append("password", password);
 
-      const res = await fetch("http://localhost:8000/signup", {
+      const res = await fetch("https://backend-xz4u.onrender.com/signup", {
         method: "POST",
         body: formData,
       });

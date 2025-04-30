@@ -65,7 +65,7 @@ const LogIn = () => {
       formData.append("email", email);
       formData.append("password", password);
 
-      const res = await fetch("http://localhost:8000/login", {
+      const res = await fetch("https://backend-xz4u.onrender.com/login", {
         method: "POST",
         body: formData,
       });
