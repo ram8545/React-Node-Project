@@ -38,7 +38,10 @@ const SignUp = () => {
   const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
 
   const validatePassword = (password) =>
-    password.length >= 8 && /\d/.test(password);
+    password.length >= 8 &&
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\|]).{8,}$/.test(
+      password
+    );
 
   const validateName = (name) => name.trim().length > 0;
 
@@ -62,7 +65,7 @@ const SignUp = () => {
 
     if (!validatePassword(password)) {
       setPasswordError(
-        "Password must contain 8 or more characters and at least one number."
+        "Password must contain 8 or more characters and at least one number, at least one captal latter."
       );
       valid = false;
     }
