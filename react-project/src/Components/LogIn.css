@@ -21,37 +21,60 @@ body {
   margin-bottom: 30px;
 }
 
-form div {
-  margin-bottom: 20px;
+/* Input Group for Floating Label */
+.input-group {
   position: relative;
+  margin-bottom: 20px;
 }
 
-input[type="email"],
-input[type="password"],
-input[type="text"] {
+.input-group input {
   width: 100%;
-  padding: 12px 40px 12px 15px;
+  padding: 14px 40px 14px 12px;
   font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
   outline: none;
   box-sizing: border-box;
+  background: none;
 }
 
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="text"]:focus {
+.input-group input:focus {
   border-color: #4caf50;
 }
 
-span {
+/* Floating Label */
+.input-group label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #888;
+  background-color: #fff;
+  padding: 0 4px;
+  transition: all 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+/* Move label on focus or when field has value */
+.input-group input:focus + label,
+.input-group input.has-value + label {
+  top: -8px;
+  font-size: 12px;
+  color: #4caf50;
+}
+
+/* Password toggle icon */
+.input-group span {
   position: absolute;
   right: 15px;
   top: 50%;
   transform: translateY(-50%);
   color: #888;
+  cursor: pointer;
 }
 
+/* Submit Button */
 input[type="button"] {
   width: 100%;
   padding: 14px;
@@ -69,6 +92,7 @@ input[type="button"]:hover {
   background-color: #45a049;
 }
 
+/* Paragraph / Link Styling */
 p {
   margin-top: 20px;
   font-size: 14px;
@@ -85,11 +109,13 @@ p a:hover {
   text-decoration: underline;
 }
 
+/* Error and Success Messages */
 .error,
 .success {
   margin-bottom: 20px;
   padding: 10px;
   border-radius: 6px;
+  text-align: left;
 }
 
 .error {
@@ -100,4 +126,18 @@ p a:hover {
 .success {
   background-color: #e7f5e6;
   color: #2e7d32;
+}
+
+/* Validation Error Input */
+.error-input {
+  border: 2px solid red;
+  background-color: #fff5f5;
+}
+
+/* Validation Error Text */
+.error-text {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  text-align: left;
 }

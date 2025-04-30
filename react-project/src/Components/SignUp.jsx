@@ -12,6 +12,9 @@ const SignUp = () => {
   const [error, setError] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -32,14 +35,39 @@ const SignUp = () => {
     setSubmitted(false);
   };
 
+  const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
+
+  const validatePassword = (password) =>
+    password.length >= 8 && /\d/.test(password);
+
+  const validateName = (name) => name.trim().length > 0;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let valid = true;
 
-    if (name === "" || email === "" || password === "") {
-      setError(true);
-      setApiMessage("Please enter all fields.");
-      return;
+    setNameError("");
+    setEmailError("");
+    setPasswordError("");
+
+    if (!validateName(name)) {
+      setNameError("Name is required.");
+      valid = false;
     }
+
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      valid = false;
+    }
+
+    if (!validatePassword(password)) {
+      setPasswordError(
+        "Password must contain 8 or more characters and at least one number."
+      );
+      valid = false;
+    }
+
+    if (!valid) return;
 
     try {
       const formData = new FormData();
@@ -67,33 +95,9 @@ const SignUp = () => {
       }
     } catch (err) {
       console.error("Error submitting form:", err);
+      setError(true);
+      setApiMessage("Something went wrong. Try again later.");
     }
-  };
-
-  const errorMessage = () => {
-    return (
-      <div
-        className="error"
-        style={{
-          display: error ? "" : "none",
-        }}
-      >
-        <h2>{apiMessage}</h2>
-      </div>
-    );
-  };
-
-  const successMessage = () => {
-    return (
-      <div
-        className="success"
-        style={{
-          display: submitted ? "" : "none",
-        }}
-      >
-        <h2>{apiMessage}</h2>
-      </div>
-    );
   };
 
   return (
@@ -102,48 +106,78 @@ const SignUp = () => {
         <h1>SignUp Page</h1>
       </div>
       <div className="message">
-        {errorMessage()}
-        {successMessage()}
+        {error && (
+          <div className="error">
+            <h2>{apiMessage}</h2>
+          </div>
+        )}
+        {submitted && (
+          <div className="success">
+            <h2>{apiMessage}</h2>
+          </div>
+        )}
       </div>
       <form>
-        <div>
+        <div className="input-group">
           <input
             type="text"
-            name="name"
             value={name}
-            placeholder="Enter your name"
             onChange={handleName}
+            className={`floating-input ${name ? "has-value" : ""}`}
           />
+          <label>
+            Name <span style={{ color: "#4ecdc4" }}>*</span>
+          </label>
+          {nameError && <p className="error-text">{nameError}</p>}
         </div>
-        <div>
+
+        <div className="input-group">
           <input
             type="email"
             value={email}
-            placeholder="Email Address"
             onChange={handleEmail}
+            className={`floating-input ${emailError ? "error-input" : ""} ${
+              email ? "has-value" : ""
+            }`}
+            required
           />
+          <label className={`floating-label ${email ? "active" : ""}`}>
+            Email Address
+          </label>
+          {emailError && <p className="error-text">{emailError}</p>}
         </div>
-        <div>
+
+        <div className="input-group" style={{ position: "relative" }}>
           <input
             type={showPassword ? "text" : "password"}
             value={password}
-            placeholder="Enter your password"
             onChange={handlePassword}
+            className={`floating-input ${passwordError ? "error-input" : ""} ${
+              password ? "has-value" : ""
+            }`}
+            required
           />
+          <label className={`floating-label ${password ? "active" : ""}`}>
+            Password
+          </label>
           <span
             onClick={togglePasswordVisibility}
-            style={{ marginLeft: "-30px", cursor: "pointer" }}
+            style={{
+              position: "absolute",
+              right: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              zIndex: 2,
+            }}
           >
             <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
           </span>
+          {passwordError && <p className="error-text">{passwordError}</p>}
         </div>
+
         <div>
-          <input
-            type="button"
-            name="button"
-            value="SignIn"
-            onClick={handleSubmit}
-          />
+          <input type="button" value="SignIn" onClick={handleSubmit} />
         </div>
         <p>
           Already have an account? <a href="/login">LogIn</a>
