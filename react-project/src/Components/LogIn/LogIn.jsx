@@ -69,17 +69,18 @@ const LogIn = () => {
       formData.append("email", email);
       formData.append("password", password);
 
-      // Use your API helper for the login call
-      const data = await API.login(formData); // You can use your API helper here
+      const data = await API.login(formData);
 
-      // Handling response data
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       setSubmitted(true);
       setError(false);
       setApiMessage(data.message || "User logged in successfully!");
       setEmail("");
       setPassword("");
 
-      navigate("/dashboard"); // Navigate to dashboard after successful login
+      navigate("/dashboard");
     } catch (err) {
       console.error("Error submitting form:", err);
       setSubmitted(false);

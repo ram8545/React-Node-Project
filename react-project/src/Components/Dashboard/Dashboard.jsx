@@ -1,26 +1,45 @@
 import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
 import { API } from "../../api/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     const fetchUsers = async () => {
       try {
         const response = await API.getUsers();
         setUsers(response);
       } catch (error) {
         console.error("Error fetching users:", error);
+        if (error.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login");
+        } else {
+          setErrorMessage(error.message || "Failed to load users.");
+        }
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="dashboard">
+      <h1>Dashboard</h1>
+      {errorMessage && <p className="error">{errorMessage}</p>}
+
       <div className="dashboard-header">
         <div>Email</div>
         <div>Name</div>
