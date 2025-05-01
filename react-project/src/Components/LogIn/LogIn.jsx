@@ -1,64 +1,55 @@
 import React, { useState } from "react";
-import "./SignUp.css";
+import "./LogIn.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { API } from "../../api/api";
 
-const SignUp = () => {
-  const [name, setName] = useState("");
+const LogIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleName = (e) => {
-    setName(e.target.value);
-    setSubmitted(false);
+  const validateEmail = (email) => {
+    const re = /^\S+@\S+\.\S+$/;
+    return re.test(email);
   };
 
-  const handlePassword = (e) => {
-    setPassword(e.target.value);
-    setSubmitted(false);
+  const validatePassword = (password) => {
+    return password.length >= 8 && /\d/.test(password);
   };
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
     setSubmitted(false);
+    setEmailError("");
   };
 
-  const validateEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
+  const handlePassword = (e) => {
+    setPassword(e.target.value);
+    setSubmitted(false);
+    setPasswordError("");
+  };
 
-  const validatePassword = (password) =>
-    password.length >= 8 &&
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\|]).{8,}$/.test(
-      password
-    );
-
-  const validateName = (name) => name.trim().length > 0;
-
-  const handleSubmit = async (e) => {
+  const submithandler = async (e) => {
     e.preventDefault();
-    let valid = true;
-
-    setNameError("");
     setEmailError("");
     setPasswordError("");
 
-    if (!validateName(name)) {
-      setNameError("Name is required.");
-      valid = false;
-    }
+    let valid = true;
 
+    // Validate email and password
     if (!validateEmail(email)) {
       setEmailError("Please enter a valid email address.");
       valid = false;
@@ -66,7 +57,7 @@ const SignUp = () => {
 
     if (!validatePassword(password)) {
       setPasswordError(
-        "Password must contain 8 or more characters and at least one number, at least one captal latter."
+        "Password must be at least 8 characters long and include a number."
       );
       valid = false;
     }
@@ -75,40 +66,32 @@ const SignUp = () => {
 
     try {
       const formData = new FormData();
-      formData.append("name", name);
       formData.append("email", email);
       formData.append("password", password);
 
-      const res = await fetch("https://backend-xz4u.onrender.com/signup", {
-        method: "POST",
-        body: formData,
-      });
+      // Use your API helper for the login call
+      const data = await API.login(formData); // You can use your API helper here
 
-      const data = await res.json();
-      if (res.ok) {
-        setSubmitted(true);
-        setApiMessage(data.message || "User successfully registered!");
-        setName("");
-        setEmail("");
-        setPassword("");
-        setError(false);
-      } else {
-        setSubmitted(false);
-        setError(true);
-        setApiMessage(data.message || "Signup failed.");
-      }
+      // Handling response data
+      setSubmitted(true);
+      setError(false);
+      setApiMessage(data.message || "User logged in successfully!");
+      setEmail("");
+      setPassword("");
+
+      navigate("/dashboard"); // Navigate to dashboard after successful login
     } catch (err) {
       console.error("Error submitting form:", err);
+      setSubmitted(false);
       setError(true);
-      setApiMessage("Something went wrong. Try again later.");
+      setApiMessage(err.message || "Something went wrong. Try again.");
     }
   };
 
   return (
-    <div className="signup">
-      <div>
-        <h1>SignUp Page</h1>
-      </div>
+    <div className="login">
+      <h1>Login </h1>
+      <p>Welcome back. Please login to your account.</p>
       <div className="message">
         {error && (
           <div className="error">
@@ -124,29 +107,16 @@ const SignUp = () => {
       <form>
         <div className="input-group">
           <input
-            type="text"
-            value={name}
-            onChange={handleName}
-            className={`floating-input ${name ? "has-value" : ""}`}
-          />
-          <label>
-            Name <span style={{ color: "#4ecdc4" }}>*</span>
-          </label>
-          {nameError && <p className="error-text">{nameError}</p>}
-        </div>
-
-        <div className="input-group">
-          <input
             type="email"
             value={email}
             onChange={handleEmail}
-            className={`floating-input ${emailError ? "error-input" : ""} ${
-              email ? "has-value" : ""
+            className={`floating-input ${email ? "has-value" : ""} ${
+              emailError ? "error-input" : ""
             }`}
             required
           />
-          <label className={`floating-label ${email ? "active" : ""}`}>
-            Email Address
+          <label>
+            Email Address <span style={{ color: "#4ecdc4" }}>*</span>
           </label>
           {emailError && <p className="error-text">{emailError}</p>}
         </div>
@@ -156,13 +126,13 @@ const SignUp = () => {
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={handlePassword}
-            className={`floating-input ${passwordError ? "error-input" : ""} ${
-              password ? "has-value" : ""
+            className={`floating-input ${password ? "has-value" : ""} ${
+              passwordError ? "error-input" : ""
             }`}
             required
           />
-          <label className={`floating-label ${password ? "active" : ""}`}>
-            Password
+          <label>
+            Password <span style={{ color: "#4ecdc4" }}>*</span>
           </label>
           <span
             onClick={togglePasswordVisibility}
@@ -172,7 +142,6 @@ const SignUp = () => {
               top: "50%",
               transform: "translateY(-50%)",
               cursor: "pointer",
-              zIndex: 2,
             }}
           >
             <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
@@ -181,14 +150,17 @@ const SignUp = () => {
         </div>
 
         <div>
-          <input type="button" value="SignIn" onClick={handleSubmit} />
+          <input type="button" value="Login" onClick={submithandler} />
         </div>
         <p>
-          Already have an account? <Link to="/login">LogIn</Link>
+          Don’t have an account? <Link to="/">SignUp now</Link>
+        </p>
+        <p>
+          Forgot your password? <Link to="/recover">Recover here</Link>
         </p>
       </form>
     </div>
   );
 };
 
-export default SignUp;
+export default LogIn;

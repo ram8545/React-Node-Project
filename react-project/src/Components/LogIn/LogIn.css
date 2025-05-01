@@ -21,6 +21,10 @@ body {
   margin-bottom: 30px;
 }
 
+.login p {
+  font-size: 18px;
+}
+
 /* Input Group for Floating Label */
 .input-group {
   position: relative;
