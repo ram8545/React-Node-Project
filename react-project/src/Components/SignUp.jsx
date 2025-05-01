@@ -3,6 +3,7 @@ import "./SignUp.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { Link } from "react-router-dom";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -183,7 +184,7 @@ const SignUp = () => {
           <input type="button" value="SignIn" onClick={handleSubmit} />
         </div>
         <p>
-          Already have an account? <a href="/login">LogIn</a>
+          Already have an account? <Link to="/login">LogIn</Link>
         </p>
       </form>
     </div>

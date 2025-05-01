@@ -3,6 +3,7 @@ import "./LogIn.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { Link } from "react-router-dom";
 
 const LogIn = () => {
   const [email, setEmail] = useState("");
@@ -153,7 +154,7 @@ const LogIn = () => {
           <input type="button" value="Login" onClick={submithandler} />
         </div>
         <p>
-          Don’t have an account? <a href="/">SignUp</a>
+          Don’t have an account? <Link to="/">SignUp</Link>
         </p>
       </form>
     </div>

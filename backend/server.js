@@ -12,7 +12,7 @@ const upload = multer();
 // CORS setup
 app.use(
   cors({
-    origin: "http://localhost:5173", // Or '*' for all origins (development)
+    origin: "*", // Or '*' for all origins (development)
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed HTTP methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   })
