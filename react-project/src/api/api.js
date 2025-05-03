@@ -1,5 +1,5 @@
-// const BASE_URL = "https://backend-xz4u.onrender.com";
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://backend-xz4u.onrender.com";
+// const BASE_URL = "http://localhost:8000";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -74,7 +74,14 @@ const getData = async (endpoint) => {
 export const API = {
   login: (formData) => postFormData("/login", formData),
   signup: (formData) => postFormData("/signup", formData),
-  getUsers: () => getData("/dashboard"), // protected
-  getUser: (id) => getData(`/users/${id}`), // protected
-  updateUser: (id, data) => putJSON(`/users/${id}`, data), // protected
+  getUsers: () => getData("/user-dashboard"),
+  getUser: (id) => getData(`/users/${id}`),
+  updateUser: (id, data) => putJSON(`/users/${id}`, data),
+  forgotPassword: (email) =>
+    fetch(`${BASE_URL}/forgot-password?email=${encodeURIComponent(email)}`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+    }),
+  resetPassword: (token, data) =>
+    postFormData(`/reset-password/${token}`, data),
 };

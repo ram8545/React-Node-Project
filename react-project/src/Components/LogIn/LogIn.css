@@ -22,7 +22,7 @@ body {
 }
 
 .login p {
-  font-size: 18px;
+  padding-bottom: 20px;
 }
 
 /* Input Group for Floating Label */

@@ -13,56 +13,24 @@ const LogIn = () => {
   const [error, setError] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const validateEmail = (email) => {
-    const re = /^\S+@\S+\.\S+$/;
-    return re.test(email);
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 8 && /\d/.test(password);
-  };
-
   const handleEmail = (e) => {
     setEmail(e.target.value);
     setSubmitted(false);
-    setEmailError("");
   };
 
   const handlePassword = (e) => {
     setPassword(e.target.value);
     setSubmitted(false);
-    setPasswordError("");
   };
 
   const submithandler = async (e) => {
     e.preventDefault();
-    setEmailError("");
-    setPasswordError("");
-
-    let valid = true;
-
-    // Validate email and password
-    if (!validateEmail(email)) {
-      setEmailError("Please enter a valid email address.");
-      valid = false;
-    }
-
-    if (!validatePassword(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters long and include a number."
-      );
-      valid = false;
-    }
-
-    if (!valid) return;
 
     try {
       const formData = new FormData();
@@ -91,7 +59,7 @@ const LogIn = () => {
 
   return (
     <div className="login">
-      <h1>Login </h1>
+      <h1>Login</h1>
       <p>Welcome back. Please login to your account.</p>
       <div className="message">
         {error && (
@@ -111,15 +79,12 @@ const LogIn = () => {
             type="email"
             value={email}
             onChange={handleEmail}
-            className={`floating-input ${email ? "has-value" : ""} ${
-              emailError ? "error-input" : ""
-            }`}
+            className={`floating-input ${email ? "has-value" : ""}`}
             required
           />
           <label>
             Email Address <span style={{ color: "#4ecdc4" }}>*</span>
           </label>
-          {emailError && <p className="error-text">{emailError}</p>}
         </div>
 
         <div className="input-group" style={{ position: "relative" }}>
@@ -127,9 +92,7 @@ const LogIn = () => {
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={handlePassword}
-            className={`floating-input ${password ? "has-value" : ""} ${
-              passwordError ? "error-input" : ""
-            }`}
+            className={`floating-input ${password ? "has-value" : ""}`}
             required
           />
           <label>
@@ -147,7 +110,6 @@ const LogIn = () => {
           >
             <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
           </span>
-          {passwordError && <p className="error-text">{passwordError}</p>}
         </div>
 
         <div>
@@ -155,8 +117,7 @@ const LogIn = () => {
         </div>
         <p>
           Don’t have an account? <Link to="/">SignUp now</Link>
-        </p>
-        <p>
+          <br />
           Forgot your password? <Link to="/recover">Recover here</Link>
         </p>
       </form>
