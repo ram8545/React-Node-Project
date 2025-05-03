@@ -64,7 +64,7 @@ const Navbar = () => {
             {showDropdown && (
               <ul className="dropdown-menu">
                 <li>
-                  <Link to="/" onClick={() => setShowDropdown(false)}>
+                  <Link to="/home" onClick={() => setShowDropdown(false)}>
                     Home
                   </Link>
                 </li>
